@@ -4,7 +4,9 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 from typing import List
+from dotenv import load_dotenv
 
+load_dotenv()
 
 class CVAnalysisResult(BaseModel):
     match_score: int = Field(description="Compatibility score from 0 to 100")
@@ -53,7 +55,7 @@ def analyze_cv(cv_text: str, job_offer: str) -> CVAnalysisResult:
 
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
-        google_api_key="AIzaSyAS4RwSUU4GLkndCml8WltNkZy8Q6yvZQA",
+        google_api_key=os.getenv("GEMINI_API_KEY"),
         temperature=0.3,
     )
 
