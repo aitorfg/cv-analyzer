@@ -4,7 +4,7 @@ import base64
 from typing import Optional
 
 # ── Config ──────────────────────────────────────────────────────────────────
-API_URL = "http://localhost:8080/api/v1/analyze"  # Change to Cloud Run URL in production
+API_URL = "https://cv-analyzer-869270551654.europe-west1.run.app/api/v1/analyze"  # Change to Cloud Run URL in production
 
 
 # ── State ────────────────────────────────────────────────────────────────────
