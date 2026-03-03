@@ -1,0 +1,21 @@
+substitutions:
+  _REGION: europe-west1
+  _SERVICE: cv-analyzer-front
+  _IMAGE: europe-west1-docker.pkg.dev/$PROJECT_ID/app/frontend
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    dir: frontend
+    args: ["build", "-t", "${_IMAGE}:${TAG_NAME}", "."]
+
+  - name: gcr.io/cloud-builders/docker
+    args: ["push", "${_IMAGE}:${TAG_NAME}"]
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    args: ["run","deploy","${_SERVICE}",
+           "--image","${_IMAGE}:${TAG_NAME}",
+           "--region","${_REGION}",
+           "--platform","managed",
+           "--quiet"]
+images:
+  - "${_IMAGE}:${TAG_NAME}"
