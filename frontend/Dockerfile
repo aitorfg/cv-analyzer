@@ -14,6 +14,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 3000 8000
+# Cloud Run
+ENV PORT=8080
+EXPOSE 8080
 
-CMD ["reflex", "run", "--env", "prod"]
+# Asegura que escucha en 0.0.0.0 y en el puerto de Cloud Run
+CMD ["sh", "-c", "reflex run --env prod --host 0.0.0.0 --port ${PORT}"]
