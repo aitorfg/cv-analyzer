@@ -14,8 +14,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN reflex init
-
 EXPOSE 3000 8000
 
 CMD ["reflex", "run", "--env", "prod"]
