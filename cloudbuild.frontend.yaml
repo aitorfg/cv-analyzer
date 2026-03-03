@@ -1,7 +1,7 @@
 substitutions:
   _REGION: europe-west1
   _SERVICE: cv-analyzer-front
-  _IMAGE: europe-west1-docker.pkg.dev/$PROJECT_ID/app/frontend
+  _IMAGE: europe-west1-docker.pkg.dev/project-3f08d13d-b69e-4bfa-ac0/app/frontend
 
 steps:
   - name: gcr.io/cloud-builders/docker
@@ -19,6 +19,6 @@ steps:
            "--quiet"]
 options:
   logging: CLOUD_LOGGING_ONLY
-  
+
 images:
   - "${_IMAGE}:${TAG_NAME}"
