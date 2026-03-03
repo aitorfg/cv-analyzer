@@ -52,7 +52,7 @@ class State(rx.State):
 
         try:
             pdf_bytes = base64.b64decode(self.cv_bytes)
-            async with httpx.AsyncClient(timeout=60.0) as client:
+            async with httpx.AsyncClient(timeout=240.0) as client:
                 response = await client.post(
                     API_URL,
                     files={"cv_file": (self.cv_filename, pdf_bytes, "application/pdf")},
