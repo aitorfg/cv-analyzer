@@ -1,10 +1,7 @@
 import reflex as rx
-import httpx
 import base64
-from typing import Optional
-from .router import router
-# ── Config ──────────────────────────────────────────────────────────────────
-API_URL = "/api/v1/analyze"  # Change to Cloud Run URL in production
+from .parser import extract_text_from_pdf
+from .analyzer import analyze_cv
 
 
 # ── State ────────────────────────────────────────────────────────────────────
@@ -52,28 +49,33 @@ class State(rx.State):
 
         try:
             pdf_bytes = base64.b64decode(self.cv_bytes)
-            async with httpx.AsyncClient(timeout=240.0) as client:
-                response = await client.post(
-                    API_URL,
-                    files={"cv_file": (self.cv_filename, pdf_bytes, "application/pdf")},
-                    data={"job_offer": self.job_offer},
-                )
 
-            if response.status_code == 200:
-                data = response.json()
-                self.match_score = data.get("match_score", 0)
-                self.strengths = data.get("strengths", [])
-                self.gaps = data.get("gaps", [])
-                self.recommendations = data.get("recommendations", "")
-                self.summary = data.get("summary", "")
-                self.seniority_match = data.get("seniority_match", "")
-                self.has_result = True
-            else:
-                detail = response.json().get("detail", "Error desconocido")
-                self.error_message = f"Error del servidor: {detail}"
+            cv_text = extract_text_from_pdf(pdf_bytes)
+            if not cv_text:
+                self.error_message = "No se pudo extraer texto del PDF."
+                return
 
-        except httpx.ConnectError:
-            self.error_message = "No se pudo conectar con el servidor. Verifica que el backend esté corriendo."
+            if len(self.job_offer.strip()) < 20:
+                self.error_message = "La descripción de la oferta es demasiado corta (mín. 20 caracteres)."
+                return
+
+            # Llamada directa al analizador (Gemini/LangChain)
+            result = analyze_cv(cv_text, self.job_offer)
+
+            # result es Pydantic (CVAnalysisResult)
+            data = result.model_dump() if hasattr(result, "model_dump") else result.dict()
+
+            self.match_score = data.get("match_score", 0)
+            self.strengths = data.get("strengths", [])
+            self.gaps = data.get("gaps", [])
+            self.recommendations = data.get("recommendations", "")
+            self.summary = data.get("summary", "")
+            self.seniority_match = data.get("seniority_match", "")
+            self.has_result = True
+
+        except ValueError as e:
+            # por ejemplo GEMINI_API_KEY no configurada (ver analyzer.py) :contentReference[oaicite:1]{index=1}
+            self.error_message = str(e)
         except Exception as e:
             self.error_message = f"Error inesperado: {str(e)}"
         finally:
@@ -595,10 +597,5 @@ app = rx.App(
         "*": {"box_sizing": "border-box"},
     },
 )
-app.api.include_router(router, prefix="/api/v1")
-
-@app.api.get("/health")
-def health_check():
-    return {"status": "ok"}
 
 app.add_page(index, route="/", title="CV Analyzer | afarina.dev")
