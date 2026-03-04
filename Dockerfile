@@ -1,20 +1,22 @@
-FROM python:3.11-slim
+FROM python:3.12-slim
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# --- System deps needed by Reflex (frontend build) ---
+RUN apt-get update && apt-get install -y \
+    curl \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Dependencias mínimas típicas (Pillow/pdfplumber suelen ir bien sin mucho extra,
-# pero esto evita sustos con builds nativos en algunos entornos)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-  && rm -rf /var/lib/apt/lists/*
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8080
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY . .
+COPY . /app
 
-# Cloud Run expone el puerto en $PORT
-CMD ["sh", "-c", "reflex run --env prod --host 0.0.0.0 --port ${PORT:-8080}"]
+EXPOSE 8080
+
+CMD ["bash", "-lc", "reflex run --env prod --single-port --backend-host 0.0.0.0 --backend-port ${PORT} --frontend-port ${PORT}"]
