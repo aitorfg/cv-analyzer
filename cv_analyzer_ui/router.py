@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from app.parser import extract_text_from_pdf
-from app.analyzer import analyze_cv, CVAnalysisResult
+from .parser import extract_text_from_pdf
+from .analyzer import analyze_cv, CVAnalysisResult
 
 router = APIRouter()
 

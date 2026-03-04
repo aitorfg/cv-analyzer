@@ -1,25 +1,23 @@
+# Environment variables
+# IDEs
+# OS
 # Python
-__pycache__/
+# Reflex
+*.db
+*.egg-info/
 *.py[cod]
 *.pyo
+.DS_Store
 .Python
-venv/
-env/
-.env
-*.egg-info/
-
-# Reflex
-.web/
-.reflex/
-
-# Environment variables
 .env
 .env.local
-
-# IDEs
-.vscode/
 .idea/
-
-# OS
-.DS_Store
+.reflex/
+.vscode/
+.web
+.web/
 Thumbs.db
+__pycache__/
+assets/external/
+env/
+venv/

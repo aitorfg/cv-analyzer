@@ -2,9 +2,9 @@ import reflex as rx
 import httpx
 import base64
 from typing import Optional
-
+from .router import router
 # ── Config ──────────────────────────────────────────────────────────────────
-API_URL = "https://cv-analyzer-869270551654.europe-west1.run.app/api/v1/analyze"  # Change to Cloud Run URL in production
+API_URL = "/api/v1/analyze"  # Change to Cloud Run URL in production
 
 
 # ── State ────────────────────────────────────────────────────────────────────
@@ -121,13 +121,11 @@ def nav() -> rx.Component:
     return rx.box(
         rx.hstack(
             rx.hstack(
-                rx.box(
-                    rx.text("A", color=ACCENT, font_size="1rem", font_weight="800"),
-                    width="32px", height="32px",
-                    border_radius="8px",
-                    bg=f"rgba(110,231,183,0.1)",
-                    border=f"1px solid {ACCENT}",
-                    display="flex", align_items="center", justify_content="center",
+                rx.image(
+                    src="/logo_afarina.png",
+                    width="120px",
+                    height="120px",
+                    object_fit="contain",
                 ),
                 rx.text(
                     "CV Analyzer",
@@ -154,6 +152,7 @@ def nav() -> rx.Component:
         max_width="900px",
         margin="0 auto",
         padding="1.25rem 1.5rem",
+        
     )
 
 
@@ -596,4 +595,10 @@ app = rx.App(
         "*": {"box_sizing": "border-box"},
     },
 )
+app.api.include_router(router, prefix="/api/v1")
+
+@app.api.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 app.add_page(index, route="/", title="CV Analyzer | afarina.dev")
