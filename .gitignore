@@ -1,16 +1,11 @@
-# Environment variables
-# IDEs
-# OS
-# Python
-# Reflex
 *.db
 *.egg-info/
 *.py[cod]
 *.pyo
 .DS_Store
 .Python
-.env
-.env.local
+# .env
+# .env.local
 .idea/
 .reflex/
 .vscode/
