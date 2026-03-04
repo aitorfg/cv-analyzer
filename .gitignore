@@ -4,8 +4,8 @@
 *.pyo
 .DS_Store
 .Python
-# .env
-# .env.local
+.env
+.env.local
 .idea/
 .reflex/
 .vscode/

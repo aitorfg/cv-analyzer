@@ -48,11 +48,6 @@ Provide your analysis as a JSON object.""")
 
 
 def analyze_cv(cv_text: str, job_offer: str) -> CVAnalysisResult:
-    """Analyze a CV against a job offer using Gemini via LangChain."""
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY environment variable not set")
-
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         google_api_key=os.getenv("GEMINI_API_KEY"),
